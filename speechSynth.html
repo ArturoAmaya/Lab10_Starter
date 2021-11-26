@@ -11,6 +11,7 @@
   <!-- Main Stylesheet & Scripts -->
   <link rel="stylesheet" href="assets/styles/global.css" />
   <script src="assets/scripts/speechSynth.js" type="module"></script>
+  <script src="https://unpkg.com/launchdarkly-js-client-sdk@2"></script>
 </head>
 
 <body>
@@ -30,8 +31,38 @@
         <option value="select" disabled selected>Select Voice:</option>
       </select>
       <button>Press to Talk</button>
+      <p id="toggle" style="visibility: hidden;">false</p>
     </section>
   </main>
+  <script>
+
+    /* Random string generation based off of:
+     * https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+     */
+    let result = '';
+    const validChars = 'ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[];,./{}:"<>?';
+    for (let i=0; i<30; i++){
+      result += validChars.charAt(Math.floor(Math.random()*validChars.length));
+    }
+
+    var user = {
+      key: result,
+    };
+  
+    var ldclient = LDClient.initialize('619fd27e337c390f3d68b699', user);
+    let boolBoy = document.getElementById("toggle");
+
+    function render() {
+      var shouldShow = ldclient.variation('flapping-mouths', false); 
+      if (shouldShow){
+        console.log("Let's flap");
+        boolBoy.innerHTML = "true";
+      }     
+    }
+  
+    ldclient.on('ready', render);
+    ldclient.on('change', render);
+  </script>
 </body>
 
 </html>

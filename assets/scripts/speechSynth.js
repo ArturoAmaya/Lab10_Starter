@@ -2,6 +2,7 @@
 
 const synth = window.speechSynthesis;
 let voices;
+let toggleBool = false;
 
 window.addEventListener('DOMContentLoaded', init);
 
@@ -31,7 +32,11 @@ function bindListeners() {
     let utterThis = new SpeechSynthesisUtterance(textToSpeak);
     utterThis.voice = voices[getOptionIndex()];
     synth.speak(utterThis);
-    openMouth();
+    let boolboy = document.getElementById("toggle");
+    toggleBool = (boolboy.innerHTML === "true");
+    console.warn(toggleBool);
+    utterThis.addEventListener('start', flapMouth(toggleBool, true));
+    utterThis.addEventListener('end', ()=> {document.querySelector('#explore > img').setAttribute('src', './assets/images/smiling.png');});
   })
 }
 
@@ -41,14 +46,47 @@ function getOptionIndex() {
   return option.getAttribute('data-index');
 }
 
-function openMouth() {
+function flapMouth(toggleBool, open) {
+  console.log("synth speaking?: " + synth.speaking);
+  console.log("toggleBool: " + toggleBool);
+  console.log("open: " + open);
   let face = document.querySelector('#explore > img');
-  face.setAttribute('src', 'assets/images/smiling-open.png');
-  setTimeout(() => {
-    if (synth.speaking) {
-      openMouth();
+  if(toggleBool) {
+    if (open) {
+      console.log("open");
+      face.setAttribute('src', './assets/images/smiling-open.png');
+      setTimeout(() => {
+        if (synth.speaking) {
+          flapMouth(toggleBool, !open);
+        }
+      }, 500);
     } else {
-      face.setAttribute('src', 'assets/images/smiling.png');
+      console.log("closed");
+      face.setAttribute('src', './assets/images/smiling.png');
+      setTimeout(() => {
+        if (synth.speaking) {
+          flapMouth(toggleBool, !open);
+        }
+      }, 500);
     }
-  }, 100);
+    
+  } else {
+    face.setAttribute('src', 'assets/images/smiling-open.png');
+    setTimeout(() => {
+      if (synth.speaking) {
+        flapMouth(toggleBool, !open);
+      } else {
+        face.setAttribute('src', 'assets/images/smiling.png');
+      }
+    }, 500);
+  }
+  
+  /*
+  let speaker = new SpeechSynthesisUtterance(text.value);
+  speaker.addEventListener ('start', function(){
+  face.src="./assets/images/smiling-open.png";
+  });
+  speaker.addEventListener ('end', function(){
+  face.src="./assets/images/smiling.png";
+  });*/
 }
