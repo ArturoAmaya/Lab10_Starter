@@ -32,9 +32,11 @@ function bindListeners() {
     let utterThis = new SpeechSynthesisUtterance(textToSpeak);
     utterThis.voice = voices[getOptionIndex()];
     synth.speak(utterThis);
+    // To get the modified version of the toggle flag
     let boolboy = document.getElementById("toggle");
     toggleBool = (boolboy.innerHTML === "true");
     console.warn(toggleBool);
+    // Two event listeners for the speaking, beginning and end
     utterThis.addEventListener('start', flapMouth(toggleBool, true));
     utterThis.addEventListener('end', ()=> {document.querySelector('#explore > img').setAttribute('src', './assets/images/smiling.png');});
   })
@@ -50,6 +52,8 @@ function flapMouth(toggleBool, open) {
   console.log("synth speaking?: " + synth.speaking);
   console.log("toggleBool: " + toggleBool);
   console.log("open: " + open);
+
+  // if the toggleflag is on, flap. If not, just open
   let face = document.querySelector('#explore > img');
   if(toggleBool) {
     if (open) {
